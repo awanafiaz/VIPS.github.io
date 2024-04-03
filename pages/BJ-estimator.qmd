@@ -1,5 +1,6 @@
 ---
 title: "Fundamentals of Survival time data"
+author:  Steve Salerno
 format: 
   html: 
     embed-resources: true
