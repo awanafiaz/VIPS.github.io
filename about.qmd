@@ -1,5 +1,12 @@
 ---
 title: "About"
+format: 
+  html: 
+    embed-resources: true
+    self-contained-math: true
+execute:
+  freeze: true  # never re-render during project render
+  # freeze: auto  # re-render only when source changes
 ---
 
 About this site

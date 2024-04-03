@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Awan Afiaz">
-<meta name="author" content="Stephen Salerno">
 
-<title>VIPS</title>
+<title>VIPS - Fundamentals of Survival time data</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -1463,7 +1461,7 @@ function fuseSearch(query, fuse, fuseOptions) {
   });
 }
 </script>
-<meta name="quarto:offset" content="./">
+<meta name="quarto:offset" content="../">
 <script>const sectionChanged = new CustomEvent("quarto-sectionChanged", {
   detail: {},
   bubbles: true,
@@ -4439,14 +4437,14 @@ vertical-align: -.125em;
 </style>
 </head>
 
-<body class="nav-fixed fullcontent">
+<body class="nav-fixed">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">VIPS</span>
     </a>
   </div>
@@ -4457,7 +4455,7 @@ vertical-align: -.125em;
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" rel target aria-current="page"><i class="bi bi-house-fill" role="img">
+    <a class="nav-link" href="../index.html" rel target><i class="bi bi-house-fill" role="img">
 </i> 
  <span class="menu-text">Home</span></a>
   </li>  
@@ -4469,19 +4467,19 @@ vertical-align: -.125em;
     </a>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-survival-analysis">    
         <li>
-    <a class="dropdown-item" href="./pages/survival-intro.html" rel target><i class="bi bi-arrow-bar-right" role="img">
+    <a class="dropdown-item" href="../pages/survival-intro.html" rel target><i class="bi bi-arrow-bar-right" role="img">
 </i> 
  <span class="dropdown-text">Introduction to Survival Analysis</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./pages/BJ-estimator.html" rel target><i class="bi bi-arrow-bar-right" role="img">
+    <a class="dropdown-item" href="../pages/BJ-estimator.html" rel target><i class="bi bi-arrow-bar-right" role="img">
 </i> 
  <span class="dropdown-text">Buckley-James Estimator</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="./about.html" rel target><i class="bi bi-info-circle-fill" role="img">
+    <a class="nav-link" href="../about.html" rel target><i class="bi bi-info-circle-fill" role="img">
 </i> 
  <span class="menu-text">About</span></a>
   </li>  
@@ -4496,45 +4494,31 @@ vertical-align: -.125em;
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="2">
+    <h2 id="toc-title">Contents</h2>
+   
+  <ul>
+  <li><a href="#fundamentals-of-survival-time-data" id="toc-fundamentals-of-survival-time-data" class="nav-link active" data-scroll-target="#fundamentals-of-survival-time-data"><span class="header-section-number">1</span> Fundamentals of Survival time data</a>
+  <ul class="collapse">
+  <li><a href="#background" id="toc-background" class="nav-link" data-scroll-target="#background"><span class="header-section-number">1.1</span> Background</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">VIPS</h1>
-<p class="subtitle lead">Valid Inference on Predicted Survival times</p>
+<h1 class="title">Fundamentals of Survival time data</h1>
 </div>
 
 
-<div class="quarto-title-meta-author">
-  <div class="quarto-title-meta-heading">Authors</div>
-  <div class="quarto-title-meta-heading">Affiliations</div>
-  
-    <div class="quarto-title-meta-contents">
-    <p class="author">Awan Afiaz <a href="https://orcid.org/0000-0001-5801-9087" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
-  </div>
-    <div class="quarto-title-meta-contents">
-        <p class="affiliation">
-            Department of Biostatistics, University of Washington
-          </p>
-        <p class="affiliation">
-            Public Health Sciences Division, Fred Hutch Cancer Center
-          </p>
-      </div>
-      <div class="quarto-title-meta-contents">
-    <p class="author">Stephen Salerno <a href="https://orcid.org/0000-0003-2763-0494" class="quarto-title-author-orcid"> <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg=="></a></p>
-  </div>
-    <div class="quarto-title-meta-contents">
-        <p class="affiliation">
-            Public Health Sciences Division, Fred Hutch Cancer Center
-          </p>
-      </div>
-    </div>
 
 <div class="quarto-title-meta">
 
-      
+    
   
     
   </div>
@@ -4542,15 +4526,19 @@ vertical-align: -.125em;
 
 </header>
 
-<p>This website will contain all information related to the project VIPS (Valid Inference on Predicted Survival times) project.</p>
-<p>Survival analysis plays a crucial role in modern biomedical studies and clinical decision making, particularly in the context of diseases such as cancers, their risk factors, and their interventions. With recent developments in Artificial Intelligence and machine learning (AI/ML), there has been a shift in how we analyze and interpret survival data, providing new opportunities to enhance our understanding of the dynamics of certain health outcomes through statistical innovation. This includes new methodologies for early screening and biomarker discovery [Ruth/Lucas?], modeling the complex relationships between treatment and risk of disease recurrence, [fourth speaker short summary], and how to draw valid statistical inference on AI/ML derived survival outcomes. This session aims to explore the intersection of survival analysis and AI/ML in the pursuit of improving health outcomes in various cancer settings. We will showcase innovative statistical methods, novel applications of AI/ML, and real-world case studies in prostate cancer screening, […], and treatment options for non-small cell lung cancer.</p>
-<section id="projects-details" class="level2">
-<h2 class="anchored" data-anchor-id="projects-details">Projects Details</h2>
-<p><strong>Project 1</strong>: Valid Inference on Predicted Time-to-Metastasis in Cancer Registries</p>
-<p><strong>Abstract</strong>:</p>
-<p>Survival analysis is characterized by methods for handling ‘censoring,’ where the event of interest may not be observed for all subjects during a finite follow-up period. This issue is further complicated in many real-world scenarios when the outcome of interest is unobserved not only due to insufficient follow-up, but also in its difficulty to be measured due to practical constraints on resources (i.e., time or cost for chart review). To overcome this, researchers increasingly impute outcomes such as metastasis with algorithmically-derived predictions. For example, [motivating data from Ruth/Lucas]. However, it has been shown that reifying AI/ML derived predictions as measured outcomes in a downstream inferential model can lead to biased point estimates and anti-conservative inference. The goal of conducting inference on predicted data (IPD) is to leverage a small sample that contains gold-standard information on both the outcome of interest, in this case […], and its associated features, to get an unbiased (and more efficient) estimate of the effect of these features in a much larger sample for which we only have access to the unlabeled features and a prediction of the outcome. In this work, we extend the recent Assumption-lean and Data-adaptive Post-Prediction Inference (POP-Inf) procedure to settings of time-to-event outcomes via an augmented Buckley-James estimator. We show analytically and in simulation that this approach provides consistent point estimates and asymptotic variance no larger than using only the labeled subset of the data. We then apply this approach to […].</p>
+<!-- ### More Options {.unnumbered .unlisted} -->
+<section id="fundamentals-of-survival-time-data" class="level1" data-number="1">
+<h1 data-number="1"><span class="header-section-number">1</span> Fundamentals of Survival time data</h1>
+<p>These notes are done based on the book <em>Survival Analysis: Techniques for Censored and Truncated Data by John P. Klein and Melvin L. Moeschberger</em>.</p>
+<section id="background" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="background"><span class="header-section-number">1.1</span> Background</h2>
+<ul>
+<li><p><strong>Survival time</strong> data is also called <strong>Time-to-event</strong> or <strong>Failure time</strong> data.</p></li>
+<li><p>So what are these <strong>events</strong>? The examples include development (or, recurrence) of a disease, appearance of a tumor, death, or failure of machine etc. Wait, the events can be good events too! For example, time to remission after treatment, cessation of smoking, etc.</p></li>
+</ul>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -4797,6 +4785,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (!isInternal(link.href)) {
           // target, if specified
           link.setAttribute("target", "_blank");
+          // default icon
+          link.classList.add("external");
       }
     }
 });

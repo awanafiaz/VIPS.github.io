@@ -1,11 +1,42 @@
 ---
-title: "VIPS.github.io"
+title: "VIPS"
+subtitle: Valid Inference on Predicted Survival times
+author: 
+  - name: Awan Afiaz
+    orcid: 0000-0001-5801-9087
+    email: aafiaz@uw.edu
+    affiliations:
+      - name: Department of Biostatistics, University of Washington
+      - name: Public Health Sciences Division, Fred Hutch Cancer Center
+      
+  - name: Stephen Salerno
+    email: ssalerno@fredhutch.org
+    orcid: 0000-0003-2763-0494
+    affiliations:
+      - name: Public Health Sciences Division, Fred Hutch Cancer Center
+
+comments: false
+format: 
+  html: 
+    toc: false
+    number-sections: false
+    ## External links
+    link-external-icon: false
+    embed-resources: true
+    self-contained-math: true
 ---
 
-This is a Quarto website.
+This website will contain all information related to the project VIPS (Valid Inference on Predicted Survival times) project.
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+Survival analysis plays a crucial role in modern biomedical studies and clinical decision making, particularly in the context of diseases such as cancers, their risk factors, and their interventions. With recent developments in Artificial Intelligence and machine learning (AI/ML), there has been a shift in how we analyze and interpret survival data, providing new opportunities to enhance our understanding of the dynamics of certain health outcomes through statistical innovation. This includes new methodologies for early screening and biomarker discovery [Ruth/Lucas?], modeling the complex relationships between treatment and risk of disease recurrence, [fourth speaker short summary], and how to draw valid statistical inference on AI/ML derived survival outcomes. This session aims to explore the intersection of survival analysis and AI/ML in the pursuit of improving health outcomes in various cancer settings. We will showcase innovative statistical methods, novel applications of AI/ML, and real-world case studies in prostate cancer screening, [...], and treatment options for non-small cell lung cancer.
 
-```{r}
-1 + 1
-```
+## Projects Details
+
+**Project 1**: Valid Inference on Predicted Time-to-Metastasis in Cancer Registries
+
+**Abstract**: 
+
+Survival analysis is characterized by methods for handling ‘censoring,’ where the event of interest may not be observed for all subjects during a finite follow-up period. This issue is further complicated in many real-world scenarios when the outcome of interest is unobserved not only due to insufficient follow-up, but also in its difficulty to be measured due to practical constraints on resources (i.e., time or cost for chart review). To overcome this, researchers increasingly impute outcomes such as metastasis with algorithmically-derived predictions. For example, [motivating data from Ruth/Lucas]. However, it has been shown that reifying AI/ML derived predictions as measured outcomes in a downstream inferential model can lead to biased point estimates and anti-conservative inference. The goal of conducting inference on predicted data (IPD) is to leverage a small sample that contains gold-standard information on both the outcome of interest, in this case [...], and its associated features, to get an unbiased (and more efficient) estimate of the effect of these features in a much larger sample for which we only have access to the unlabeled features and a prediction of the outcome. In this work, we extend the recent Assumption-lean and Data-adaptive Post-Prediction Inference (POP-Inf) procedure to settings of time-to-event outcomes via an augmented Buckley-James estimator. We show analytically and in simulation that this approach provides consistent point estimates and asymptotic variance no larger than using only the labeled subset of the data. We then apply this approach to [...].
+
+
+

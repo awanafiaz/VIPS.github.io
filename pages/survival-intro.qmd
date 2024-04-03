@@ -1,0 +1,24 @@
+---
+title: "Fundamentals of Survival time data"
+format: 
+  html: 
+    embed-resources: true
+    self-contained-math: true
+execute:
+  freeze: true  # never re-render during project render
+  # freeze: auto  # re-render only when source changes
+---
+
+<!-- ### More Options {.unnumbered .unlisted} -->
+
+# Fundamentals of Survival time data
+
+These notes are done based on the book *Survival Analysis: Techniques for Censored and Truncated Data by John P. Klein and Melvin L. Moeschberger*.
+
+## Background
+
+- **Survival time** data is also called **Time-to-event** or **Failure time** data. 
+
+- So what are these **events**? The examples include development (or, recurrence) of a disease, appearance of a tumor, death, or failure of machine etc. Wait, the events can be good events too! For example, time to remission after treatment, cessation of smoking, etc.
+
+

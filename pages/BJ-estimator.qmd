@@ -1,0 +1,154 @@
+---
+title: "Fundamentals of Survival time data"
+format: 
+  html: 
+    embed-resources: true
+    self-contained-math: true
+execute:
+  freeze: true  # never re-render during project render
+  # freeze: auto  # re-render only when source changes
+---
+
+<!-- ### More Options {.unnumbered .unlisted} -->
+
+## Background
+
+
+### Survival Analysis Notations
+
+In *survival analysis*, our outcome is the time until the occurrence of a specific event, which represents a qualitative change or the transition from one discrete state to another (e.g., alive to deceased). As this event of interest may not be observed for all subjects during a finite follow-up period, subjects whose event times are not observed are said to be *censored*. Methods for survival analysis are developed to extract information from *all subjects,* censored or not.
+
+To introduce some notation, let $T_i$ denote the failure time for the $i$th individual in a study of $n$ subjects and let $C_i$ denote the (right) censoring time. We observe $W_i = \min(T_i, C_i)$ and $\delta_i = I(T_i \leq C_i)$ where $I(\cdot)$ is the indicator function. Additionally, we observed $\boldsymbol{X}_i$, a $p\times 1$ vector of covariates. Our goal is to draw inference on the relationship between $W$ and $\boldsymbol{X}$.
+
+### The Accelerated Failure Time (AFT) Model
+
+Broadly, two common approaches for analyzing censored time-to-event outcomes are the *proportional hazards (Cox) model* and the *accelerated failure time (AFT) model*. The Cox model is *semi-parametric* and models the hazard function. It assumes that the effect of a particular covariate multiplies the hazards of experiencing the event by some constant. In contrast, the AFT model is *parametric* and directly models the survival time. The AFT model assumes that the effect of a covariate 'accelerates' or 'decelerates' the time to event by some constant. For this project idea, we will focus on the AFT model, as it fits into the estimating equations framework of Miao et al. (2023) and relies on the actual time scale, not solely on the relative ranking of individual's observation times.
+
+The AFT model links the (log-transformed) survival times to covariates via a linear model
+
+$$Y_i = \log(T_i) = \boldsymbol{X}_i\boldsymbol{\beta} + \varepsilon_i$$
+
+where $\boldsymbol{\beta}$ is a $p\times 1$ vector of regression coefficients and $\varepsilon_i$ is a random error term. Note that the log transformation ensures the parameter space of $\boldsymbol{\beta}$ is unconstrained, and the distribution of the errors, $\varepsilon_i$, induces a distribution for $T_i$ (e.g., normal errors $\to$ log-normal failure times, extreme value errors $\to$ Weibull failure times). As with linear regression, we can find estimates for the regression coefficient via least squares estimating equations. This involves minimizing the sum of squared residuals by setting the score equations equal to zero and solving for $\boldsymbol{\beta}$ by
+
+$$\sum_i \psi(Y_i, \boldsymbol{X}_i; \boldsymbol{\beta}) = \sum_i \boldsymbol{X}_i'(Y_i - \boldsymbol{X}_i\boldsymbol{\beta}) = \boldsymbol{0}.$$
+
+### The Buckley-James Estimator
+
+When the underlying survival distribution is not well-known or when the assumption of a specific parametric model is questionable, alternative approaches for the modeling survival times are preferred. With *unspecified* errors, we would have a *semi-parametric* AFT model, but the maximum likelihood estimates are difficult to obtain as the likelihood involves infinite-dimensional parameters. The Buckley-James estimator (Buckley and James, 1979) is a nonparametric approach used for censored survival data, which estimates the regression parameters of the AFT model without making any assumptions on the distribution of the errors. The motivation for the Buckley-James estimator is as follows.
+
+Firstly, to accommodate censoring, We replace $Y_i$ by 
+
+$$Y_i^* = \delta_i Y_i + (1- \delta_i) E[Y_i\mid Y_i > log(C_i)].$$ 
+
+That is, for censored individuals, we *impute* their (log) survival time by its conditional expectation. Again, we aim to solve
+
+$$\sum_i \boldsymbol{X}_i'(Y_i^* - \boldsymbol{X}_i\boldsymbol{\beta}) = 0$$
+
+
+But, as we do not make any assumptions on the distribution of $\varepsilon_i$, we do not know the distribution of $Y_i$, nor $E[Y_i\mid Y_i > log(C_i)]$. Instead, we replace this conditional expectation by its estimate,
+
+$$\tilde{Y}_i(\beta) = X_i\beta + \frac{\int_{e_i(\beta)}^\infty u \hat{F}_\beta(u)}{1 - \hat{F}_\beta(e_i(\beta))}$$
+
+where $e_i(\beta)$ are the working residuals $W_i - X_i \beta$ and $\hat{F}_\beta(e) = 1 - \prod_{i:e_{(i)} \leq \varepsilon}\left(\frac{n - i}{n - i + 1}\right)^{\delta_i}$ is the *product-limit estimator* (i.e., the Kaplan-Meier estimator) of the distribution function of the residuals. Finally, letting
+
+$$\tilde{Y}_i^*(\beta) = \delta_i Y_i + (1 - \delta_i)\tilde{Y}_i(\beta),$$
+
+the Buckley-James estimator is the solution to 
+
+$$\beta = \left[\sum_iX_i'X_i \right]^{-1}\left[\sum_iX_i'\tilde{Y}_i^*(\beta) \right],$$
+
+which needs to be solved iteratively. Moreover, the Buckley-James estimator has nice properties, such as consistency and asymptotic normality, if you initialize the procedure with a consistent estimator.
+
+## Valid Inference on Predicted Survival Data
+
+Up until this point, we have assumed that both our outcome and our covariates are fully measured* (*will need better language to differentiate between not observed = censored and not observed = not measured). However, a more realistic setting is that our survival outcome is difficult to measure due to practical constraints on resources such as time or cost. An example of this is measuring metastatic recurrence, which requires extensive chart review. In this setup, now consider a study of $n + N$ individuals, where we have only measured the outcome on the first $n < N$ subjects. To overcome this, researchers often impute difficult-to-measure outcomes with algorithmically-derived predictions. However, it has been shown (see, for example, Wang et al., 2020), that reifying AI/ML derived predictions as measured outcomes in a downstream inferential model can lead to biased point estimates and anti-conservative inference.
+
+
+The goal of conducting inference on predicted data (IPD) is to leverage a small sample of size $n$ that contains information on both the outcome of interest, in this case the tuple $(W_i, \delta_i)$, and a vector of associated features, $\boldsymbol{X}_i$, to get an unbiased estimate of the effect of these features (and more efficient inference) in a much larger sample of size $N$, for which we only have access to the unlabeled features, $\boldsymbol{X}$. Following the notation of Miao et al. (2023), consider a *labeled* dataset, denoted by $\mathcal{L}$, in which we observe the tuple $(\boldsymbol{X}, \boldsymbol{Z}, \boldsymbol{W}, \boldsymbol{\delta}) \in (\mathcal{X} \times \mathcal{Z} \times \mathcal{W} \times \mathcal{\delta})^n$, where $\mathcal{L} = \{(\boldsymbol{X}_i, \boldsymbol{Z}_i, W_i, \delta_i);\ i = 1, \ldots, n\}$ are independent and identically distributed (i.i.d.) samples from a distribution, $\mathbb{P}$. Similarly, let $\mathcal{U} = \{(\boldsymbol{X}_i, \boldsymbol{Z}_i);\ i = n + 1, \ldots, n + N\}$ denote an *unlabeled* sample, where we assume $(\boldsymbol{X}_i, \boldsymbol{Z}_i)$ are i.i.d. samples from $\mathbb{P}$. We assume that $n/N \to \rho$ as $n, N \to \infty$, and we let $\rho = \infty$ if $N = 0$. Note that the outcome, $(W_i, \delta_i)$, is not observed in $\mathcal{U}$ due to practical constraints such as time or cost. In practice, $W_i$ is replaced by a predicted value, denoted by $f(\boldsymbol{Z}_i)$, where $f:\mathcal{Z} \to \mathcal{W}$ is a prediction rule that is learned a priori, e.g., from an independent training dataset. We assume that we do not have access to the operating characteristics of $f$, nor do we have access to the data used in its training. Further, we make the distinction between the set of features which are predictive of $W$, denoted by $\boldsymbol{Z}\in \mathbb{R}^q$, and those features which are hypothesized to be associated with $Y$, denoted by $\boldsymbol{X}\in \mathbb{R}^p$. In certain situations, it may be the case that $\boldsymbol{X} \subseteq \boldsymbol{Z}$, but we make no such assumptions here, as this is context-specific.
+
+The proposal for this project is to extend the Buckley-James estimator to the setting of the POP-inf estimator for linear regression, which solves
+
+
+$$
+\begin{aligned}
+\psi&(Y_i, \boldsymbol{X}_i; \boldsymbol{\beta})^{\rm popinf} = \underbrace{\frac{1}{n}\sum_{i = 1}^{n} \psi_i(Y_i, \boldsymbol{X}_i; \boldsymbol{\beta})}_{\text{`Classical' estimator on labeled subset}} \\
+&+ \boldsymbol{\omega} \odot \underbrace{\left\{-\underbrace{\frac{1}{n}\sum_{i = 1}^{n} \psi_i(f(\boldsymbol{Z}_i), \boldsymbol{X}_i; \boldsymbol{\beta})}_{\text{`Naive' estimator on labeled subset}} + \underbrace{\frac{1}{N}\sum_{i = n + 1}^{n + N} \psi_i(f(\boldsymbol{Z}_i), \boldsymbol{X}_i; \boldsymbol{\beta})}_{\text{`Naive' estimator on unlabeled subset}}\right\}}_{\text{Auxillary information from mean-zero nuisance function}} = \boldsymbol{0},
+\end{aligned}
+$$
+
+where $\psi(\cdot)$ denotes the least squares score equation and $\boldsymbol{\omega}$ is a weight vector. The full estimator above can be thought of as the so-called *classical approach* (i.e., using only the labeled subset of the data), which is consistent and valid, augmented by weighted mean-zero term. Note that for $\boldsymbol{\omega} = \boldsymbol{0}$, this estimator reduces to this `classical estimator.' 
+
+## Buckley-James Inference on Predicted Data
+
+We can derive the Buckley-James IPD estimator based on the following score equations. For convenience, we will write $f_i = f(\boldsymbol{Z}_i)$.
+
+$$
+\begin{aligned}
+&= \frac{1}{n}\sum_{i = 1}^{n} \psi_i(\tilde{Y}_i^*(\beta), \boldsymbol{X}_i; \boldsymbol{\beta}) + \boldsymbol{\omega} \odot \left\{-\frac{1}{n}\sum_{i = 1}^{n} \psi_i(\tilde{f}_i^*(\beta), \boldsymbol{X}_i; \boldsymbol{\beta}) + \frac{1}{N}\sum_{i = n + 1}^{n + N} \psi_i(\tilde{f}_i^*(\beta), \boldsymbol{X}_i; \boldsymbol{\beta})\right\} \\
+&= \frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{X}_i(\tilde{Y}_i^*(\beta) - \boldsymbol{X}_i'\boldsymbol{\beta}) + \boldsymbol{\omega} \odot \left\{-\frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{X}_i(\tilde{f}_i^*(\beta) - \boldsymbol{X}_i' \boldsymbol{\beta}) + \frac{1}{N}\sum_{i = n + 1}^{n + N} \boldsymbol{X}_i(\tilde{f}_i^*(\beta) - \boldsymbol{X}_i' \boldsymbol{\beta})\right\} \\
+&= \frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{X}_i(\tilde{Y}_i^*(\beta) - \boldsymbol{X}_i'\boldsymbol{\beta}) -\frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{\omega} \odot \boldsymbol{X}_i(\tilde{f}_i^*(\beta) - \boldsymbol{X}_i' \boldsymbol{\beta}) + \frac{1}{N}\sum_{i = n + 1}^{n + N} \boldsymbol{\omega} \odot \boldsymbol{X}_i(\tilde{f}_i^*(\beta) - \boldsymbol{X}_i' \boldsymbol{\beta}) \\
+&= \frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{X}_i(\delta_i Y_i + (1 - \delta_i)\tilde{Y}_i(\beta) - \boldsymbol{X}_i'\boldsymbol{\beta}) -\frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{\omega} \odot \boldsymbol{X}_i(\delta_i f_i + (1 - \delta_i)\tilde{f}_i(\beta) - \boldsymbol{X}_i' \boldsymbol{\beta}) + \frac{1}{N}\sum_{i = n + 1}^{n + N} \boldsymbol{\omega} \odot \boldsymbol{X}_i(\delta_i f_i + (1 - \delta_i)\tilde{f}_i(\beta) - \boldsymbol{X}_i' \boldsymbol{\beta}) \\
+&= \frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{X}_i\left(\delta_i Y_i + (1 - \delta_i)\left[X_i\beta + \frac{\int_{e_i(\beta)}^\infty u \hat{F}_\beta(u)}{1 - \hat{F}_\beta(e_i(\beta))}\right] - \boldsymbol{X}_i'\boldsymbol{\beta}\right)\\
+&\hskip 5ex -\frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{\omega} \odot \boldsymbol{X}_i\left(\delta_i f_i + (1 - \delta_i)\left[X_i\beta + \frac{\int_{e^f_i(\beta)}^\infty u \hat{F}^f_\beta(u)}{1 - \hat{F}^f_\beta(e^f_i(\beta))}\right] - \boldsymbol{X}_i' \boldsymbol{\beta}\right)\\
+&\hskip 5ex + \frac{1}{N}\sum_{i = n + 1}^{n + N} \boldsymbol{\omega} \odot \boldsymbol{X}_i\left(\delta_i f_i + (1 - \delta_i)\left[X_i\beta + \frac{\int_{e^f_i(\beta)}^\infty u \hat{F}^f_\beta(u)}{1 - \hat{F}^f_\beta(e^f_i(\beta))}\right] - \boldsymbol{X}_i' \boldsymbol{\beta}\right) \\
+&= \frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{X}_i\left(\delta_i Y_i + (1 - \delta_i)X_i\beta + (1 - \delta_i)\frac{\int_{e_i(\beta)}^\infty u \hat{F}_\beta(u)}{1 - \hat{F}_\beta(e_i(\beta))} - \boldsymbol{X}_i'\boldsymbol{\beta}\right)\\
+&\hskip 5ex -\frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{\omega} \odot \boldsymbol{X}_i\left(\delta_i f_i + (1 - \delta_i)X_i\beta + (1 - \delta_i)\frac{\int_{e^f_i(\beta)}^\infty u \hat{F}^f_\beta(u)}{1 - \hat{F}^f_\beta(e^f_i(\beta))} - \boldsymbol{X}_i' \boldsymbol{\beta}\right)\\
+&\hskip 5ex + \frac{1}{N}\sum_{i = n + 1}^{n + N} \boldsymbol{\omega} \odot \boldsymbol{X}_i\left(\delta_i f_i + (1 - \delta_i)X_i\beta + (1 - \delta_i)\frac{\int_{e^f_i(\beta)}^\infty u \hat{F}^f_\beta(u)}{1 - \hat{F}^f_\beta(e^f_i(\beta))} - \boldsymbol{X}_i' \boldsymbol{\beta}\right) \\
+&= \frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{X}_i\left(\delta_i Y_i - \delta_i X_i\beta + (1 - \delta_i)\frac{\int_{e_i(\beta)}^\infty u \hat{F}_\beta(u)}{1 - \hat{F}_\beta(e_i(\beta))}\right)\\
+&\hskip 5ex -\frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{\omega} \odot \boldsymbol{X}_i\left(\delta_i f_i - \delta_i X_i\beta + (1 - \delta_i)\frac{\int_{e^f_i(\beta)}^\infty u \hat{F}^f_\beta(u)}{1 - \hat{F}^f_\beta(e^f_i(\beta))} \right)\\
+&\hskip 5ex + \frac{1}{N}\sum_{i = n + 1}^{n + N} \boldsymbol{\omega} \odot \boldsymbol{X}_i\left(\delta_i f_i - \delta_i X_i\beta + (1 - \delta_i)\frac{\int_{e^f_i(\beta)}^\infty u \hat{F}^f_\beta(u)}{1 - \hat{F}^f_\beta(e^f_i(\beta))}\right) \\
+&= \frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{X}_i\left(\delta_i [Y_i - X_i\beta] + (1 - \delta_i)\frac{\int_{e_i(\beta)}^\infty u \hat{F}_\beta(u)}{1 - \hat{F}_\beta(e_i(\beta))}\right)\\
+&\hskip 5ex -\frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{\omega} \odot \boldsymbol{X}_i\left(\delta_i [f_i - X_i\beta] + (1 - \delta_i)\frac{\int_{e^f_i(\beta)}^\infty u \hat{F}^f_\beta(u)}{1 - \hat{F}^f_\beta(e^f_i(\beta))} \right)\\
+&\hskip 5ex + \frac{1}{N}\sum_{i = n + 1}^{n + N} \boldsymbol{\omega} \odot \boldsymbol{X}_i\left(\delta_i [f_i - X_i\beta] + (1 - \delta_i)\frac{\int_{e^f_i(\beta)}^\infty u \hat{F}^f_\beta(u)}{1 - \hat{F}^f_\beta(e^f_i(\beta))}\right) \\
+\end{aligned}
+$$
+Setting this equal to zero and solving for $\beta$, we have that:
+
+$$
+\begin{aligned}
+\Rightarrow 0 &= \frac{1}{n}\sum_{i = 1}^{n} X_i\left(\delta_i [Y_i - X_i'\beta] + (1 - \delta_i)\frac{\int_{e_i(\beta)}^\infty u \hat{F}_\beta(u)}{1 - \hat{F}_\beta(e_i(\beta))}\right)\\
+&\hskip 5ex -\frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{\omega} \odot X_i\left(\delta_i [f_i - X_i'\beta] + (1 - \delta_i)\frac{\int_{e^f_i(\beta)}^\infty u \hat{F}^f_\beta(u)}{1 - \hat{F}^f_\beta(e^f_i(\beta))} \right)\\
+&\hskip 5ex + \frac{1}{N}\sum_{i = n + 1}^{n + N} \boldsymbol{\omega} \odot X_i\left(\delta_i [f_i - X_i'\beta] + (1 - \delta_i)\frac{\int_{e^f_i(\beta)}^\infty u \hat{F}^f_\beta(u)}{1 - \hat{F}^f_\beta(e^f_i(\beta))}\right) \\
+\Rightarrow 0 &= \frac{1}{n}\sum_{i = 1}^{n} \left(\delta_i [X_iY_i - X_iX_i'\beta] + (1 - \delta_i)X_i\frac{\int_{e_i(\beta)}^\infty u \hat{F}_\beta(u)}{1 - \hat{F}_\beta(e_i(\beta))}\right)\\
+&\hskip 5ex -\frac{1}{n}\sum_{i = 1}^{n} \boldsymbol{\omega} \odot X_i\left(\delta_i [f_i - X_i'\beta] + (1 - \delta_i)\frac{\int_{e^f_i(\beta)}^\infty u \hat{F}^f_\beta(u)}{1 - \hat{F}^f_\beta(e^f_i(\beta))} \right)\\
+&\hskip 5ex + \frac{1}{N}\sum_{i = n + 1}^{n + N} \boldsymbol{\omega} \odot X_i\left(\delta_i [f_i - X_i'\beta] + (1 - \delta_i)\frac{\int_{e^f_i(\beta)}^\infty u \hat{F}^f_\beta(u)}{1 - \hat{F}^f_\beta(e^f_i(\beta))}\right) \\
+\end{aligned}
+$$
+
+This needs to be optimized iteratively, as $\beta$ will appear on both sizes of the equation. Further, we will use a plug-in estimate of $\boldsymbol{\omega}$ which will also be updated iteratively. Roughly speaking, the procedure is as follows:
+
+
+1. Initialize $\beta = \beta_0$, $\omega = \omega_0$
+2. Set iteration counter iter = 0
+3. Repeat until convergence or maximum iterations reached:
+    a. Compute the working residuals:
+    b. Compute the weighted least squares estimate of $\beta$
+    c. Update beta using a step size $\xi$
+    d. Update the variance/covariance matrix with current $\beta$
+    e. Optimize $\omega$
+    d. Increment iteration counter: $iter = iter + 1$
+    e. Check for convergence: If $||WLS_{\beta} - \beta|| < tol$, break
+    f. Check for maximum iterations: If $iter \geq maxiter$, break
+
+4. Output the final estimated coefficients, $\beta$, and weights, $\omega$
+
+
+Note that Miao et al. (2023) proved that their proposed estimator is consistent and asymptotically normal, with
+
+$$\sqrt{n}(\hat{\boldsymbol{\beta}}_{\rm PopInf}(\boldsymbol{\omega}) - \boldsymbol{\beta}_0) \overset{D}{\to} \mathcal{N}(\boldsymbol{O}, \boldsymbol{\Sigma}(\boldsymbol{\omega})),$$
+
+where $\boldsymbol{\Sigma}(\boldsymbol{\omega})=\mathbf{A}^{-1} \mathbf{V}(\boldsymbol{\omega}) \mathbf{A}$
+
+$\mathbf{A}=\mathbb{E}\left[\nabla_{\boldsymbol{\beta}} \psi\left(Y, \mathbf{X} ; \boldsymbol{\beta}_0\right)\right]$
+
+$\mathbf{V}(\boldsymbol{\omega})=\mathbf{M}_1+\boldsymbol{\omega} \omega^{\mathrm{T}} \odot\left(\mathbf{M}_2+\rho \mathbf{M}_3\right)-2 \mathbf{I}_q \omega^{\mathrm{T}} \odot \mathbf{M}_4$
+
+$\mathbf{M}_1= \operatorname{Var}_l\left[\psi\left(Y, \mathbf{X} ; \beta_0\right)\right]$
+
+$\mathbf{M}_2=\operatorname{Var}_l\left[\psi\left(\widehat{f}(\mathbf{Z}), \mathbf{X} ; \beta_0\right)\right]$
+
+$\mathbf{M}_3=\operatorname{Var}_u\left[\psi\left(\widehat{f}(\mathbf{Z}), \mathbf{X} ; \beta_0\right)\right]$
+
+$\mathbf{M}_4=\operatorname{Cov}_l\left[\psi\left(Y, \mathbf{X} ; \beta_0\right), \psi\left(\widehat{f}(\mathbf{Z}), \mathbf{X} ; \beta_0\right)\right]$
+
+for any $\boldsymbol{\omega}$. They minimize the asymptotic variance of their estimator by finding the optimal $\boldsymbol{\omega}$ that minimizes the variance of each parameter, element-wise. We will need to derive this optimal weight for the Buckley-James estimator. 
